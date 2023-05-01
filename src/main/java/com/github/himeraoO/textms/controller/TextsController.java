@@ -1,10 +1,12 @@
 package com.github.himeraoO.textms.controller;
 
 import com.github.himeraoO.textms.DTO.TextsDTO;
+import com.github.himeraoO.textms.exception.ConflictException;
 import com.github.himeraoO.textms.exception.NotFoundException;
-import com.github.himeraoO.textms.handle_exception.NotFoundError;
+import com.github.himeraoO.textms.handle_exception.ErrorMessage;
 import com.github.himeraoO.textms.service.TextsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,43 +32,61 @@ public class TextsController {
         this.textsService = textsService;
     }
 
+    @GetMapping(value = "/text/{id}")
+    public ResponseEntity<TextsDTO> getTexts(@PathVariable Long id) {
+        return new ResponseEntity<>(textsService.findTexts(id), HttpStatus.OK);
+    }
+
     @GetMapping(value = "/text")
     public ResponseEntity<List<TextsDTO>> getAllTexts() {
-        ResponseEntity<List<TextsDTO>> responseEntity = new ResponseEntity<List<TextsDTO>>(textsService.findAll(), HttpStatus.OK);
-        return responseEntity;
+        List<TextsDTO> textsDTOList = textsService.findAll();
+
+        return new ResponseEntity<>(textsDTOList, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/text?page={page}&size={size}", params = { "page", "size" })
+    public ResponseEntity<Page<TextsDTO>> getWithPaginationTexts(@PathVariable("page") Integer page, @PathVariable("size") Integer size) {
+        Page<TextsDTO> textsDTOPage = textsService.findWithPagination(page, size);
+
+        return new ResponseEntity<>(textsDTOPage, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/text?username={username}", params = {"username"})
+    public ResponseEntity<List<TextsDTO>> findTextsByUsername(@PathVariable("username") String username) {
+        List<TextsDTO> textsDTOList = textsService.findByUsername(username);
+
+        return new ResponseEntity<>(textsDTOList, HttpStatus.OK);
     }
 
     @PostMapping(value = "/text")
     public ResponseEntity<TextsDTO> saveTexts(@RequestBody TextsDTO textsDTO) {
-        ResponseEntity<TextsDTO> responseEntity = new ResponseEntity<>(textsService.save(textsDTO), HttpStatus.CREATED);
-        return responseEntity;
-    }
-
-    @GetMapping(value = "/text/{id}")
-    public ResponseEntity<TextsDTO> getTexts(@PathVariable Long id) {
-        ResponseEntity<TextsDTO> responseEntity = new ResponseEntity<>(textsService.findTexts(id), HttpStatus.OK);
-        return responseEntity;
+        return new ResponseEntity<>(textsService.save(textsDTO), HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/text/{id}")
     public ResponseEntity<TextsDTO> updateTexts(@PathVariable Long id, @RequestBody TextsDTO textsDTO) {
-        ResponseEntity<TextsDTO> responseEntity = new ResponseEntity<>(textsService.update(id, textsDTO), HttpStatus.OK);
-        return responseEntity;
+        return new ResponseEntity<>(textsService.update(id, textsDTO), HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/text/{id}")
-    public ResponseEntity<TextsDTO> deleteTexts(@PathVariable Long id) {
-//        ResponseEntity<TextsDTO> responseEntity = new ResponseEntity<>(textsService.delete(id), HttpStatus.OK);
-//        return responseEntity;
-        return null;
+    public ResponseEntity<?> deleteTexts(@PathVariable Long id) {
+        textsService.delete(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @ExceptionHandler({NotFoundException.class})
-    public ResponseEntity<NotFoundError> handleException(NotFoundException exception){
-        NotFoundError notFoundError = new NotFoundError();
-        notFoundError.setError(exception.getMessage());
-        notFoundError.setStatusCode(404);
+    public ResponseEntity<ErrorMessage> handleException(NotFoundException exception) {
+        ErrorMessage errorMessage = new ErrorMessage(exception.getMessage(), 404);
 
-        return new ResponseEntity<>(notFoundError, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler({ConflictException.class})
+    public ResponseEntity<ErrorMessage> handleException(ConflictException exception) {
+        ErrorMessage errorMessage = new ErrorMessage(exception.getMessage(), 409);
+        errorMessage.setError(exception.getMessage());
+
+        return new ResponseEntity<>(errorMessage, HttpStatus.CONFLICT);
+    }
+
 }

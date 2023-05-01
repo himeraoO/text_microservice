@@ -1,8 +1,10 @@
 package com.github.himeraoO.textms.config;
 
+import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
@@ -23,7 +25,7 @@ import javax.sql.DataSource;
 @Configuration
 @EnableJpaRepositories(basePackages = "com.github.himeraoO.textms.repository")
 @EnableTransactionManagement
-@PropertySource({"classpath:database.properties", "classpath:hibernate.properties"})
+@PropertySource({"classpath:database.properties", "classpath:hibernate.properties", "classpath:flyway.properties"})
 public class DatabaseConfig {
 
     private final Environment environment;
@@ -46,6 +48,7 @@ public class DatabaseConfig {
     }
 
     @Bean
+    @DependsOn("flyway")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean entityManager = new LocalContainerEntityManagerFactoryBean();
         entityManager.setDataSource(dataSource());
@@ -98,4 +101,17 @@ public class DatabaseConfig {
 //
 //        return transactionManager;
 //    }
+
+    @Bean(initMethod = "migrate")
+    public Flyway flyway() {
+        return Flyway.configure()
+                .dataSource(
+                        environment.getRequiredProperty("flyway.url"),
+                        environment.getRequiredProperty("flyway.user"),
+                        environment.getRequiredProperty("flyway.password")
+                )
+                .locations(environment.getRequiredProperty("flyway.locations"))
+                .baselineOnMigrate(true)
+                .load();
+    }
 }
