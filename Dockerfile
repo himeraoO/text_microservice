@@ -1,5 +1,5 @@
 # Install Tomcat    & openjdk 11 (openjdk has java and javac)
-FROM tomcat:tomcat:9-jdk11-openjdk
+FROM tomcat:9-jdk11-openjdk
 ENV DB_USERNAME='dev_textms_db_user'
 ENV DB_PASSWORD='dev_textms_db_password'
 ARG JAR_FILE=target/*.war
