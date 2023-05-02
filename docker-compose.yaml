@@ -1,13 +1,24 @@
 version: '3.1'
 
 services:
+  textms:
+    depends_on:
+      - textms-db-dev
+    build:
+      context: .
+    environment:
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+    restart: always
   textms-db-dev:
       image: mysql
       restart: always
       environment:
         MYSQL_DATABASE: 'dev_textms_db'
-        MYSQL_USER: 'dev_textms_db_user'
-        MYSQL_PASSWORD: 'dev_textms_db_password'
+#        MYSQL_USER: 'dev_textms_db_user'
+        MYSQL_USER: ${DB_USERNAME}
+#        MYSQL_PASSWORD: 'dev_textms_db_password'
+        MYSQL_PASSWORD: ${DB_PASSWORD}
         MYSQL_ROOT_PASSWORD: 'root'
       ports:
         # <Port exposed> : < MySQL Port running inside container>

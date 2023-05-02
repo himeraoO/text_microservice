@@ -58,18 +58,18 @@ public class TextsController {
         return new ResponseEntity<>(textsDTOList, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/text")
+    @PostMapping(value = "/text", consumes = "application/json")
     public ResponseEntity<TextsDTO> saveTexts(@RequestBody TextsDTO textsDTO) {
         return new ResponseEntity<>(textsService.save(textsDTO), HttpStatus.CREATED);
     }
 
-    @PutMapping(value = "/text/{id}")
+    @PutMapping(value = "/text/{id}", consumes = "application/json")
     public ResponseEntity<TextsDTO> updateTexts(@PathVariable Long id, @RequestBody TextsDTO textsDTO) {
         return new ResponseEntity<>(textsService.update(id, textsDTO), HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/text/{id}")
-    public ResponseEntity<?> deleteTexts(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTexts(@PathVariable Long id) {
         textsService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
