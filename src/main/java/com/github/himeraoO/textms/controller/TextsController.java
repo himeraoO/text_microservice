@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController()
-@RequestMapping(value = "text_microservice/")
+@RequestMapping(value = "/")
 public class TextsController {
 
     private final TextsService textsService;
