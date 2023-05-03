@@ -9,10 +9,10 @@ services:
     image: testms
 #    ports:
 #      - 8181:8080
-    environment:
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-    restart: always
+#    environment:
+#      DB_USERNAME: ${DB_USERNAME}
+#      DB_PASSWORD: ${DB_PASSWORD}
+#    restart: always
   textms-db-dev:
       image: mysql
       restart: always
