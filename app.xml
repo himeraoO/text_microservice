@@ -1,5 +1,5 @@
 <Context
-        docBase="/usr/local/tomcat/webapps/"
+        docBase="/usr/local/tomcat/webapps/app"
         path=""
         reloadable="true"
 />

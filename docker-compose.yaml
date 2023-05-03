@@ -10,13 +10,13 @@ services:
       - '8181:8080'
     expose:
       - '8181'
-    environment:
-      MYSQL_DATABASE: 'dev_textms_db'
-      MYSQL_USER: 'dev_textms_db_user'
-      #        MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: 'dev_textms_db_password'
-      #        MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: 'root'
+#    environment:
+#      MYSQL_DATABASE: 'dev_textms_db'
+#      MYSQL_USER: 'dev_textms_db_user'
+#      #        MYSQL_USER: ${DB_USERNAME}
+#      MYSQL_PASSWORD: 'dev_textms_db_password'
+#      #        MYSQL_PASSWORD: ${DB_PASSWORD}
+#      MYSQL_ROOT_PASSWORD: 'root'
     restart: always
   textms-db-dev:
       image: mysql
