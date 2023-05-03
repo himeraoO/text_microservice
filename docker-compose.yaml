@@ -8,7 +8,7 @@ services:
 #      context: .
     image: testms
 #    volumes:
-#      - ./ROOT.xml:/usr/local/tomcat/conf/Catalina/localhost/
+#      - ./app.xml:/usr/local/tomcat/conf/Catalina/localhost/
     ports:
       - '8181:8080'
     expose:

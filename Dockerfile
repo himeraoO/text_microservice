@@ -7,7 +7,7 @@ ARG JAR_FILE=target/*.war
 ENV MY_CONTEXT=app
 COPY ${JAR_FILE} /usr/local/tomcat/webapps/${MY_CONTEXT}.war
 #COPY ${JAR_FILE} /usr/local/tomcat/webapps/app.war
-COPY ./ROOT.xml /usr/local/tomcat/conf/Catalina/localhost/
+COPY app.xml /usr/local/tomcat/conf/Catalina/localhost/
 
 EXPOSE 8181
 
