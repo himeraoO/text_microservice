@@ -7,8 +7,10 @@ services:
     build: .
 #      context: .
     image: testms
-#    ports:
-#      - 8181:8080
+    ports:
+      - '8181:8080'
+    expose:
+      - '8181'
 #    environment:
 #      DB_USERNAME: ${DB_USERNAME}
 #      DB_PASSWORD: ${DB_PASSWORD}
