@@ -5,27 +5,28 @@ services:
     depends_on:
       - textms-db-dev
     build: .
-#      context: .
     image: testms
-#    volumes:
-#      - ./app.xml:/usr/local/tomcat/conf/Catalina/localhost/
     ports:
       - '8181:8080'
     expose:
       - '8181'
-#    environment:
-#      DB_USERNAME: ${DB_USERNAME}
-#      DB_PASSWORD: ${DB_PASSWORD}
-#    restart: always
+    environment:
+      MYSQL_DATABASE: 'dev_textms_db'
+      MYSQL_USER: 'dev_textms_db_user'
+      #        MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: 'dev_textms_db_password'
+      #        MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: 'root'
+    restart: always
   textms-db-dev:
       image: mysql
       restart: always
       environment:
         MYSQL_DATABASE: 'dev_textms_db'
-#        MYSQL_USER: 'dev_textms_db_user'
-        MYSQL_USER: ${DB_USERNAME}
-#        MYSQL_PASSWORD: 'dev_textms_db_password'
-        MYSQL_PASSWORD: ${DB_PASSWORD}
+        MYSQL_USER: 'dev_textms_db_user'
+#        MYSQL_USER: ${DB_USERNAME}
+        MYSQL_PASSWORD: 'dev_textms_db_password'
+#        MYSQL_PASSWORD: ${DB_PASSWORD}
         MYSQL_ROOT_PASSWORD: 'root'
       ports:
         # <Port exposed> : < MySQL Port running inside container>
@@ -34,18 +35,3 @@ services:
         # Opens port 3333 on the container
         - '3333'
       command: --character-set-server=utf8 --collation-server=utf8_general_ci
-#  web:
-#    depends_on:
-#      - textms-db-dev
-#    image: tomcat
-#    volumes:
-#      - ./target/*.war:/usr/local/tomcat/webapps/app.war
-#    ports:
-#      - '8181:8080'
-#    environment:
-#      MYSQL_DATABASE: 'dev_textms_db'
-#      #        MYSQL_USER: 'dev_textms_db_user'
-#      MYSQL_USER: ${DB_USERNAME}
-#      #        MYSQL_PASSWORD: 'dev_textms_db_password'
-#      MYSQL_PASSWORD: ${DB_PASSWORD}
-#      MYSQL_ROOT_PASSWORD: 'root'
