@@ -8,4 +8,4 @@ COPY ${JAR_FILE} /usr/local/tomcat/webapps/
 
 EXPOSE 8181
 
-CMD ["catalina.sh", "run"]
+#CMD ["catalina.sh", "run"]
