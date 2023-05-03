@@ -7,3 +7,5 @@ ARG JAR_FILE=target/*.war
 COPY ${JAR_FILE} /usr/local/tomcat/webapps/
 
 EXPOSE 8181
+
+CMD ["catalina.sh", "run"]
