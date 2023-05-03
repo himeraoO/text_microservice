@@ -6,7 +6,7 @@ ARG JAR_FILE=target/*.war
 # Copy source files to tomcat folder structure
 #ENV MY_CONTEXT=''
 #COPY ${JAR_FILE} /usr/local/tomcat/webapps/${MY_CONTEXT}.war
-COPY ${JAR_FILE} /usr/local/tomcat/webapps/app.war
+COPY ${JAR_FILE} /usr/local/tomcat/webapps/
 COPY ./ROOT.xml /usr/local/tomcat/conf/Catalina/localhost/
 
 EXPOSE 8181
