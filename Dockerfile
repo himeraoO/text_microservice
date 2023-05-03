@@ -4,9 +4,9 @@ ENV DB_USERNAME='dev_textms_db_user'
 ENV DB_PASSWORD='dev_textms_db_password'
 ARG JAR_FILE=target/*.war
 # Copy source files to tomcat folder structure
-#ENV MY_CONTEXT=''
-#COPY ${JAR_FILE} /usr/local/tomcat/webapps/${MY_CONTEXT}.war
-COPY ${JAR_FILE} /usr/local/tomcat/webapps/
+ENV MY_CONTEXT=app
+COPY ${JAR_FILE} /usr/local/tomcat/webapps/${MY_CONTEXT}.war
+#COPY ${JAR_FILE} /usr/local/tomcat/webapps/app.war
 COPY ./ROOT.xml /usr/local/tomcat/conf/Catalina/localhost/
 
 EXPOSE 8181
