@@ -6,6 +6,7 @@ import com.github.himeraoO.textms.exception.NotFoundException;
 import com.github.himeraoO.textms.model.Texts;
 import com.github.himeraoO.textms.repository.TextsRepository;
 import com.github.himeraoO.textms.service.TextsService;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,10 +15,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Transactional(readOnly = true)
 @Service
+@Slf4j
+@Transactional(readOnly = true)
 public class TextsServiceImpl implements TextsService {
 
     private final TextsRepository textsRepository;
@@ -34,6 +37,8 @@ public class TextsServiceImpl implements TextsService {
         Texts texts = textsRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Нет элементов с таким id: " + id));
 
+        log.info("Texts с id = {} получен", texts.getId());
+
         return modelMapper.map(texts, TextsDTO.class);
     }
 
@@ -44,6 +49,8 @@ public class TextsServiceImpl implements TextsService {
         if (textsList.isEmpty()) {
             throw new NotFoundException("Элементы не найдены");
         }
+
+        log.info("Получен список всех Texts");
 
         return textsList.stream()
                 .map(texts -> modelMapper.map(texts, TextsDTO.class))
@@ -59,11 +66,13 @@ public class TextsServiceImpl implements TextsService {
             throw new NotFoundException("Элементы не найдены");
         }
 
+        log.info("Получен постраничный список всех Texts");
+
         return dtoPage;
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = false)
     public TextsDTO update(long id, TextsDTO textsDTO) {
         Texts textsFromBd = textsRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Нет элементов с таким id: " + id));
@@ -71,36 +80,49 @@ public class TextsServiceImpl implements TextsService {
         textsFromBd.setUsername(textsDTO.getUsername());
         textsFromBd.setTitle(textsDTO.getTitle());
         textsFromBd.setDescription(textsDTO.getDescription());
-        textsFromBd.setData(textsDTO.getData());
+        textsFromBd.setDataText(textsDTO.getDataText());
+        Texts updatedTexts = textsRepository.save(textsFromBd);
 
-        return modelMapper.map(textsRepository.save(textsFromBd), TextsDTO.class);
+        log.info("Texts с id = {} обновлен", updatedTexts.getId());
+
+        return modelMapper.map(updatedTexts, TextsDTO.class);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = false)
     public void delete(long id) {
         Texts texts = textsRepository.findById(id).orElseThrow(() -> new NotFoundException("Нет элементов с таким id: " + id));
         textsRepository.delete(texts);
+
+        log.info("Texts с id = {} удален", texts.getId());
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = false)
     public TextsDTO save(TextsDTO textsDTO) {
-        Texts textsFromBd = textsRepository
-                .findByUsernameAndTitleAndDescription(
-                        textsDTO.getUsername(),
-                        textsDTO.getTitle(),
-                        textsDTO.getDescription())
-                .orElseThrow(() -> new ConflictException(
-                        String.format(
-                                "Элементы с такими значениями: username: %s, title: %s, desription: %s уже существуют: ",
-                                textsDTO.getUsername(),
-                                textsDTO.getTitle(),
-                                textsDTO.getDescription())));
+        textsDTO.setId(0L);
+
+        Optional<Texts> optionalTexts = textsRepository.findByUsernameAndTitleAndDescription(
+                textsDTO.getUsername(),
+                textsDTO.getTitle(),
+                textsDTO.getDescription()
+        );
+
+        if(optionalTexts.isPresent()){
+            throw  new ConflictException(
+                    String.format(
+                            "Элементы с такими значениями: username: %s, title: %s, desription: %s уже существуют.",
+                            textsDTO.getUsername(),
+                            textsDTO.getTitle(),
+                            textsDTO.getDescription()));
+        }
 
         Texts texts = modelMapper.map(textsDTO, Texts.class);
-        Texts updatedTexts = textsRepository.save(texts);
-        return modelMapper.map(updatedTexts, TextsDTO.class);
+        Texts savedTexts = textsRepository.save(texts);
+
+        log.info("Texts с id = {} создан", savedTexts.getId());
+
+        return modelMapper.map(savedTexts, TextsDTO.class);
     }
 
     @Override
@@ -110,6 +132,8 @@ public class TextsServiceImpl implements TextsService {
         if (textsList.isEmpty()) {
             throw new NotFoundException("Элементы не найдены");
         }
+
+        log.info("Получен список всех Texts для username = {}", query);
 
         return textsList.stream().map(texts -> modelMapper.map(texts, TextsDTO.class)).collect(Collectors.toList());
     }

@@ -1,37 +1,29 @@
-version: '3.1'
+version: '3.8'
 
 services:
   textms:
     depends_on:
-      - textms-db-dev
-    build: .
+      - textms-db
     image: testms
+    container_name: textms
+    build:
+      context: .
     ports:
-      - '8181:8080'
+      - 9090:8080
     expose:
-      - '8181'
-#    environment:
-#      MYSQL_DATABASE: 'dev_textms_db'
-#      MYSQL_USER: 'dev_textms_db_user'
-#      #        MYSQL_USER: ${DB_USERNAME}
-#      MYSQL_PASSWORD: 'dev_textms_db_password'
-#      #        MYSQL_PASSWORD: ${DB_PASSWORD}
-#      MYSQL_ROOT_PASSWORD: 'root'
+      - 9090
     restart: always
-  textms-db-dev:
-      image: mysql
-      restart: always
-      environment:
-        MYSQL_DATABASE: 'dev_textms_db'
-        MYSQL_USER: 'dev_textms_db_user'
-#        MYSQL_USER: ${DB_USERNAME}
-        MYSQL_PASSWORD: 'dev_textms_db_password'
-#        MYSQL_PASSWORD: ${DB_PASSWORD}
-        MYSQL_ROOT_PASSWORD: 'root'
-      ports:
-        # <Port exposed> : < MySQL Port running inside container>
-        - '3333:3306'
-      expose:
-        # Opens port 3333 on the container
-        - '3333'
-      command: --character-set-server=utf8 --collation-server=utf8_general_ci
+
+  textms-db:
+    image: postgres:14-alpine
+    container_name: text-db
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_DB=textms_db
+      - POSTGRES_USER=textms_db_user
+      - POSTGRES_PASSWORD=textms_db_password
+volumes:
+  db-data:
+    driver: local
